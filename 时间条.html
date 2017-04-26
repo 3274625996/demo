@@ -22,7 +22,7 @@
             var width = $("#timebar").outerWidth();
             var percent = positionX / width;
             var startTimeNum = numbgtime + difference * percent;
-            var startTime = timetodate(startTimeNum, "yyyy/MM/dd,hh,mm,ss");
+            var startTime = timetodate(startTimeNum, "yyyy-MM-dd hh:mm:ss");
             if (positionX > (width - 200)) {//200为#timebar-tips的宽度
                 $("#timebar-tips").text(startTime).css("left", positionX - 200);
             } else {
