@@ -1,0 +1,147 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <title>时间条</title>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.js"></script>
+    <script type="text/javascript">
+        var positionX;
+        var bgtime = "2017-04-18 00:00:00";
+        var edtime = "2017-04-19 00:00:00";
+        var numbgtime = datetotime(bgtime);
+        var numedtime = datetotime(edtime);
+        var difference = numedtime - numbgtime;
+        $(function(){
+            $("#bar-startTime").text(bgtime);
+            $("#bar-endTime").text(edtime);
+            $("#timebar-tips").text(bgtime);
+        });
+
+        function getPositionX(event) {
+            positionX = event.pageX - $("#timebar").offset().left; //获取当前鼠标相对时间条的X坐标
+            var width = $("#timebar").outerWidth();
+            var percent = positionX / width;
+            var startTimeNum = numbgtime + difference * percent;
+            var startTime = timetodate(startTimeNum, "yyyy/MM/dd,hh,mm,ss");
+            if (positionX > (width - 200)) {//200为#timebar-tips的宽度
+                $("#timebar-tips").text(startTime).css("left", positionX - 200);
+            } else {
+                $("#timebar-tips").text(startTime).css("left", positionX + 20);
+
+            }
+
+        }
+        function videoReStart() {
+            $("#timebar-start").css("left", positionX);
+            $("#timebar-dark").css("width",positionX);
+        }
+        //传入参数：本地时间"2014-10-29 14:10:08"
+        //传出参数：本地时间与1970年1月1日相差的秒数
+        function datetotime(time_str) {
+            time_str = time_str.replace(/:/g, '-');
+            time_str = time_str.replace(/ /g, '-');
+            var time_arr = time_str.split('-');
+            var t = new Date(time_arr[0], time_arr[1] - 1, time_arr[2], time_arr[3], time_arr[4], time_arr[5]);
+            //程江宁修改结束20141030
+            t = parseInt((t.getTime()) / 1000);
+            return t;
+        }
+        function timetodate(tim, dat) {
+            return pattern(new Date((tim) * 1000), dat);   //"yyyy/MM/dd,hh,mm,ss"
+        }
+        function pattern(dt, fmt) {
+            var o = {
+                "M+": dt.getMonth() + 1, //月份
+                "d+": dt.getDate(), //日
+                "h+": dt.getHours() == 0 ? 12 : dt.getHours(), //小时
+                "H+": dt.getHours(), //小时
+                "m+": dt.getMinutes(), //分
+                "s+": dt.getSeconds(), //秒
+                "q+": Math.floor((dt.getMonth() + 3) / 3), //季度
+                "S": dt.getMilliseconds() //毫秒
+            };
+            /*     var week = {
+             "0" : "\u65e5",
+             "1" : "\u4e00",
+             "2" : "\u4e8c",
+             "3" : "\u4e09",
+             "4" : "\u56db",
+             "5" : "\u4e94",
+             "6" : "\u516d"
+             }; */
+            if (/(y+)/.test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (dt.getFullYear() + "").substr(4 - RegExp.$1.length));
+            }
+            /*     if(/(E+)/.test(fmt)){
+             fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "\u661f\u671f" : "\u5468") : "")+week[this.getDay()+""]);
+             }  */
+            for (var k in o) {
+                if (new RegExp("(" + k + ")").test(fmt)) {
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                }
+            }
+            return fmt;
+        }
+    </script>
+    <style>
+        #timebar {
+            position: relative;
+            height: 5px;
+            background: #a32e13;
+            cursor: pointer;
+
+        }
+        #timebar-dark{
+            position: absolute;
+            left: 0;
+            top: 0px;
+            width: 1px;
+            height: 5px;
+            background: #5a1a0b;
+            z-index: 1;
+        }
+        #timebar-start {
+            position: absolute;
+            left: 0;
+            top: -3px;
+            width: 3px;
+            height: 12px;
+            background: #520711;
+        }
+
+        #timebar-tips {
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 200px;
+            height: 20px;
+            z-index: 3;
+            background: #17a326;
+            color: #fff;
+        }
+        #startTime,#endTime{
+            position: absolute;
+            width: 124px;
+            font-size: 10px;
+            top: 0px;
+            color: #797979;
+        }
+        #startTime{
+            left: 0;
+        }
+        #endTime{
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+<!---->
+<div id="timebar" onmousemove="getPositionX(event)" onclick="videoReStart()">
+    <p id="startTime"></p>
+    <p id="endTime"></p>
+    <div id="timebar-dark"></div>
+    <div id="timebar-start"></div>
+    <div id="timebar-tips"></div>
+</div>
+</body>
+</html>
